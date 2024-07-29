@@ -1,0 +1,557 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- dodałem ten tag, aby ustawić viewport strony -->
+    <title>TomAIto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Użyłem zmiennych CSS, aby łatwiej zmieniać kolory i czcionki */
+        :root {
+            --primary-color: #409c0f;
+            --secondary-color: #e2513b;
+            --dark-color: #333;
+            --light-color: #fff;
+            --font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 20px;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-color);
+            color: var(--light-color) !important;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--light-color);
+            text-align: center;
+            padding: 20pt;
+            padding-right: 10%;
+            padding-left: 10%;
+            font-size: 24px;
+            width: 80%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        header span {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        #darkModeToggle {
+            width: 90px;
+            height: 45px;
+            font-size: 18px;
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            border: var(--light-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+        }
+
+        #darkModeToggle:hover {
+            background-color: var(--secondary-color);
+        }
+
+        canvas {
+            border: 1px solid var(--dark-color);
+            max-height: 600px;
+            display: block;
+            margin: auto;
+            margin-top: 20px;
+            background-color: var(--light-color);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        #weatherInfo {
+            max-width: 100%;
+            position: relative;
+            margin: auto;
+            margin-top: 10px; /* Add some margin between legend and weatherInfo */
+            padding: 15px;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        form {
+            max-width: 600px;
+            width: 100%;
+            margin: auto;
+            margin-top: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--light-color);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            color: var(--dark-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode form {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid var(--dark-color);
+            border-radius: 4px;
+            background-color: var(--light-color);
+            transition: border-color 0.3s;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        input[type="file"]:focus {
+            outline: none;
+            border-color: var(--secondary-color); /* użyłem zmiennej CSS zamiast koloru szesnastkowego */
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--secondary-color); /* użyłem zmiennej CSS zamiast koloru szesnastkowego */
+            color: var(--light-color);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: var(--primary-color); /* użyłem zmiennej CSS zamiast koloru szesnastkowego */
+            transform: scale(1.05);
+        }
+
+        #legend {
+            position: relative;
+            top: 0px;
+            align-items: center;
+            display: flex;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            font-size: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 0;
+        }
+
+        #legend h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            position: relative;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px; /* Add some spacing between legend items */
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border-radius: 5px;
+        }
+
+        .legend-label {
+            font-weight: bold;
+        }
+
+        #weatherInfo.dark-mode {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+        }
+
+        #legend.dark-mode {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--light-color);
+        }
+
+
+        /* dodałem zapytania medialne, aby dostosować styl strony do różnych szerokości okna przeglądarki */
+        @media (max-width: 768px) {
+
+            #legend {
+                position: relative;
+                align-items: left;
+                display: flex;
+                top: auto; /* Reset the top position */
+                bottom: 20px; /* Add some distance from the bottom of the page */
+                justify-content: center;
+                margin-top: 10px;
+            }
+
+            .legend-item {
+                margin-right: 0; /* Remove right margin on smaller screens */
+                margin-bottom: 10px; /* Add some spacing between legend items */
+            }
+        }
+            
+
+            #darkModeToggle {
+                position: right;
+                transform: none;
+                margin-top: 10px;
+            }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 10pt;
+                font-size: 20px;
+            }
+
+            form {
+                padding: 10px;
+            }
+
+            label {
+                font-size: 16px;
+            }
+
+            input,
+            select,
+            button {
+                font-size: 14px;
+            }
+            #legend {
+                
+                align-items: left;
+                top: auto; /* Reset the top position */
+                bottom: 20px; /* Add some distance from the bottom of the page */
+                margin-top: 10px;
+                flex-direction: column;
+                justify-content: left;
+            }
+
+            .legend-item {
+                margin-right: 0; /* Remove right margin on smaller screens */
+                margin-bottom: 10px; /* Add some spacing between legend items */
+                justify-content: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Tom<span style="color: #ff6600;">AI</span>to
+        <button id="darkModeToggle" onclick="toggleDarkMode()">Dark Mode</button>
+    </header>
+
+    <form id="uploadForm">
+
+        <label for="cropType">Crop Type:</label>
+        <select id="cropType" name="cropType">
+            <option value="external">External</option>
+            <option value="internal">Internal</option>
+            <option value="greenhouse">Greenhouse</option>
+        </select>
+        
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required/>
+
+        <label for="uploadInput">Choose an image:</label>
+        <input id="uploadInput" type="file" required/>
+        
+        <button type="submit" id="checkRipenessBtn">Check the ripeness</button>
+    </form>
+    
+    <div id="loadingMessage" style="display: none;">Loading...</div>
+
+    <canvas style="display: none; max-width: 100%;"></canvas>
+
+    <div id="legend" style="display: none;"></div>
+    
+    <div id="weatherInfo" style="display: none;"></div>
+
+    <script>
+        const form = document.getElementById("uploadForm");
+        const loadingMessage = document.getElementById("loadingMessage");
+        const weatherInfo = document.getElementById("weatherInfo");
+        const canvas = document.querySelector("canvas");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        // Show loading message and weather info
+        loadingMessage.style.display = "block";
+        weatherInfo.style.display = "block";
+
+        // Disable the button to prevent multiple submissions
+        document.getElementById("checkRipenessBtn").disabled = true;
+
+        const fileInput = document.getElementById("uploadInput");
+        const cropTypeInput = document.getElementById("cropType");
+        const locationInput = document.getElementById("location");
+
+        const file = fileInput.files[0];
+
+        const data = new FormData();
+        data.append("image_file", file);
+        data.append("cropType", cropTypeInput.value);
+        data.append("location", locationInput.value);
+
+        const response = await fetch("/detect", {
+            method: "post",
+            body: data
+        });
+
+        const boxes = await response.json();
+        draw_image_and_boxes(file, boxes);
+
+        // Hide loading message and enable the button after canvas is loaded
+        loadingMessage.style.display = "none";
+        document.getElementById("checkRipenessBtn").disabled = false;
+
+        const location = locationInput.value;
+
+        if (cropTypeInput.value === "external") {
+            updateWeatherInfo(location, cropTypeInput.value);
+        } else {
+            const randomTips = [
+                "water your tomatoes every day.",
+                "keep the temperature between 20-25 degrees Celsius.",
+                "place the tomatoes in sunlight."
+            ];
+
+            const randomTip = randomTips[Math.floor(Math.random() * randomTips.length)];
+            weatherInfo.innerText = "TIP! To maximize your yields " + randomTip;
+        }
+    });
+
+    function draw_image_and_boxes(file, boxes) {
+        const img = new Image()
+        img.src = URL.createObjectURL(file);
+        img.onload = () => {
+            // Show canvas once the image is loaded
+            canvas.style.display = "block";
+            //weatherInfo.innerText = ""; // Clear previous weather info
+
+            const ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            ctx.lineWidth = 15;
+            ctx.font = "bold 70px Arial"; // Zwiększono rozmiar czcionki
+
+            // Draw bounding boxes
+            boxes.forEach(([x1, y1, x2, y2, object_type, prob]) => {
+                
+                switch (object_type) {
+                    case "b_fully_ripened":
+                        object_type = "big fully ripened"; 
+                        break;
+                    case "b_half_ripened":
+                        object_type = "big half ripened"; 
+                        break;
+                    case "b_green":
+                        object_type = "big unripe";
+                        break;
+                    case "l_fully_ripened":
+                        object_type = "small fully ripened"; 
+                        break;
+                    case "l_half_ripened":
+                        object_type = "small half ripened"; 
+                        break;
+                    case "l_green":
+                        object_type = "small unripe"; 
+                        break;
+                    default:
+                        object_type = "#000000";
+                        break;
+                }
+                
+                
+                // Przypisz różne kolory do różnych klas
+                let boxColor;
+                switch (object_type) {
+                    case "big fully ripened":
+                        boxColor = "#0077FF"; 
+                        break;
+                    case "big half ripened":
+                        boxColor = "#00FFDE"; 
+                        break;
+                    case "big unripe":
+                        boxColor = "#B2EBF2";
+                        break;
+                    case "small fully ripened":
+                        boxColor = "#C62828"; 
+                        break;
+                    case "small half ripened":
+                        boxColor = "#E57373"; 
+                        break;
+                    case "small unripe":
+                        boxColor = "#FBD943"; 
+                        break;
+                    default:
+                        boxColor = "#000000";
+                        break;
+                }
+                const label = `${object_type}`;
+
+                ctx.strokeStyle = boxColor;
+                ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+                ctx.fillStyle = boxColor;
+                const width = ctx.measureText(label).width;
+                ctx.fillRect(x1, y1 - 40, width + 10, 70);
+                ctx.fillStyle = "#000000";
+                ctx.fillText(label, x1, y1 + 10 ); // Przesunięcie etykiety
+            });
+
+            // Draw legend
+            drawLegend(ctx);
+            
+        };
+}
+
+function drawLegend(ctx) {
+    // Remove existing legend container
+    const existingLegend = document.getElementById("legend");
+    if (existingLegend) {
+        existingLegend.parentNode.removeChild(existingLegend);
+    }
+
+    const legendContainer = document.createElement("div");
+    legendContainer.id = "legend";
+
+    const legendTitle = document.createElement("h3");
+    legendTitle.textContent = "";
+
+    legendContainer.appendChild(legendTitle);
+
+    const legendItems = [
+        { label: "big fully ripened", color: "#0077FF" },
+        { label: "big half ripened", color: "#00FFDE" },
+        { label: "big unripe", color: "#B2EBF2" },
+        { label: "small fully ripened", color: "#C62828" },
+        { label: "small half ripened", color: "#E58633" },
+        { label: "small unripe", color: "#FBD943" },
+    ];
+
+    legendItems.forEach(item => {
+        const legendItem = document.createElement("div");
+        
+        legendItem.classList.add("legend-item");
+
+        const legendColor = document.createElement("div");
+        legendColor.classList.add("legend-color");
+        legendColor.style.backgroundColor = item.color;
+
+        const legendLabel = document.createElement("div");
+        legendLabel.classList.add("legend-label");
+        legendLabel.textContent = item.label;
+
+        legendItem.appendChild(legendColor);
+        legendItem.appendChild(legendLabel);
+
+        legendContainer.appendChild(legendItem);
+    });
+
+    document.body.appendChild(legendContainer);
+}
+
+
+        async function updateWeatherInfo(location, cropType) {
+            const apiKey = "1fc6a52c96331d035a828cc0c1606241";
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}`;
+
+            try {
+                const weatherResponse = await fetch(apiUrl);
+                const weatherData = await weatherResponse.json();
+
+                if (weatherData.main && weatherData.main.temp) {
+                    const temperatureKelvin = weatherData.main.temp;
+                    const temperatureCelsius = temperatureKelvin - 273.15;
+                    const tempRound = Math.round(temperatureCelsius);
+
+                    const weatherCondition = weatherData.weather[0].main;
+                    const isRaining = weatherCondition === 'Rain';
+
+                    let additionalInfo = `${isRaining ? 'Rain is expected in your town today, so you dont have to water your tomatoes' :
+                        'No rainfall is expected in the city today, so you need to water your tomatoes!'} Temperature in ${location} is ${tempRound} °C.`;
+
+                    if (tempRound < 15) {
+                        additionalInfo += ' So you need to cover your tomatoes!';
+                    }
+
+                    weatherInfo.innerText = additionalInfo;
+                } else {
+                    weatherInfo.innerText = "Unable to fetch weather data.";
+                }
+
+            } catch (error) {
+                console.error("Error fetching weather data:", error);
+                weatherInfo.innerText = "Error fetching weather data.";
+            }
+        }
+
+
+    </script>  
+        <script>
+            // Dark mode toggle functionality
+    function toggleDarkMode() {
+        const body = document.body;
+        body.classList.toggle('dark-mode');
+
+        // Toggle dark mode for weatherInfo and legend
+        const weatherInfo = document.getElementById('weatherInfo');
+        const legend = document.getElementById('legend');
+
+        if (body.classList.contains('dark-mode')) {
+            weatherInfo.classList.add('dark-mode');
+            legend.classList.add('dark-mode');
+            
+        } else {
+            weatherInfo.classList.remove('dark-mode');
+            legend.classList.remove('dark-mode');
+            
+        }
+
+        // Change the text content of the toggle icon
+        const toggleIcon = document.getElementById('darkModeToggle');
+        toggleIcon.textContent = body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+    }
+        </script>
+</body>
+</html>
